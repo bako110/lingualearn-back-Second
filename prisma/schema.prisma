@@ -1,0 +1,139 @@
+// Prisma Schema Definition - Authentication Only
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Main users table
+model User {
+  id                  String         @id @default(cuid())
+  email               String?        @unique
+  phone               String?        @unique
+  passwordHash        String
+  username            String?        @unique
+  userType            UserType       @default(parent)
+  parentId            String?        // Self-referential
+  familyId            String?
+  isVerified          Boolean        @default(false)
+  subscriptionPlan    String         @default("free")
+  subscriptionEndsAt  DateTime?
+  lastLogin           DateTime?
+  lastActive          DateTime?
+  status              UserStatus     @default(active)
+  
+  // Timestamps
+  createdAt           DateTime       @default(now())
+  updatedAt           DateTime       @updatedAt
+  
+  // Relations
+  parent              User?          @relation("UserParent", fields: [parentId], references: [id])
+  children            User[]         @relation("UserParent")
+  refreshTokens       RefreshToken[]
+  passwordResetTokens PasswordResetToken[]
+  verificationCodes   VerificationCode[]
+  loginAttempts       LoginAttempt[]
+  sessions            Session[]
+  
+  @@map("users")
+}
+
+// Refresh tokens for JWT rotation
+model RefreshToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("refresh_tokens")
+}
+
+// Password reset tokens
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  expiresAt DateTime
+  used      Boolean  @default(false)
+  createdAt DateTime @default(now())
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("password_reset_tokens")
+}
+
+// Email verification codes
+model VerificationCode {
+  id          String     @id @default(cuid())
+  userId      String?
+  contactType String     // 'email', 'phone'
+  contactValue String    // email or phone number
+  code        String
+  type        String     // 'registration', 'password_reset', 'phone_change', 'email_change'
+  isUsed      Boolean    @default(false)
+  expiresAt   DateTime
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("verification_codes")
+}
+
+// Login attempts tracking
+model LoginAttempt {
+  id        String   @id @default(cuid())
+  userId    String?
+  email     String?
+  phone     String?
+  success   Boolean
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  
+  // Relations
+  user User? @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("login_attempts")
+}
+
+// User sessions
+model Session {
+  id           String   @id @default(cuid())
+  userId       String
+  sessionToken String   @unique
+  deviceInfo   Json?
+  ipAddress    String?
+  lastActivity DateTime @default(now())
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@map("sessions")
+}
+
+// Enums
+enum UserType {
+  admin
+  parent
+  child
+  teacher
+}
+
+enum UserStatus {
+  active
+  inactive
+  suspended
+  deleted
+}

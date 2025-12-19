@@ -7,7 +7,7 @@ const router = express.Router();
 
 /**
  * @swagger
- * /:
+ * /api/v1:
  *   get:
  *     tags:
  *       - Health
@@ -41,7 +41,7 @@ router.get('/', (req, res) => {
 
 /**
  * @swagger
- * /health:
+ * /api/v1/health:
  *   get:
  *     tags:
  *       - Health

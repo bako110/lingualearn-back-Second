@@ -114,7 +114,7 @@ class AuthService {
     }
     
     // ============ CONNEXION ============
-    async login(data) {
+    async login(data, req) {
         const { email, phone, password } = data;
         
         // Trouver l'utilisateur par email ou phone

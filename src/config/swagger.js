@@ -15,11 +15,11 @@ const options = {
     },
     servers: [
       {
-        url: `http://localhost:${appConfig.port}/api/${appConfig.apiVersion}`,
+        url: `http://localhost:${appConfig.port}`,
         description: 'Development server',
       },
       {
-        url: `${process.env.API_URL || 'https://api.lingualearn.com'}/api/${appConfig.apiVersion}`,
+        url: process.env.API_URL || 'https://api.lingualearn.com',
         description: 'Production server',
       },
     ],
@@ -40,6 +40,7 @@ const options = {
     ],
   },
   apis: [
+    './src/routes/index.js',
     './src/modules/auth/auth.routes.js',
     './src/modules/user/user.routes.js',
   ],

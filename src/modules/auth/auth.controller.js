@@ -26,7 +26,7 @@ const authController = {
     // Connexion
     login: asyncHandler(async (req, res) => {
         const validatedData = loginSchema.parse(req.body);
-        const result = await authService.login(validatedData);
+        const result = await authService.login(validatedData, req);
         
         res.json({
             success: true,

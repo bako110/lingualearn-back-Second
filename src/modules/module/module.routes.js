@@ -1,20 +1,20 @@
 const express = require('express');
-const controller = require('./language.controller');
+const controller = require('./module.controller');
 const router = express.Router();
 
 /**
  * @swagger
  * tags:
- *   name: Languages
- *   description: Gestion des langues
+ *   name: Modules
+ *   description: Gestion des modules de niveau
  */
 
 /**
  * @swagger
- * /api/v1/languages:
+ * /api/v1/modules:
  *   post:
- *     summary: Créer une nouvelle langue
- *     tags: [Languages]
+ *     summary: Créer un module
+ *     tags: [Modules]
  *     requestBody:
  *       required: true
  *       content:
@@ -22,27 +22,24 @@ const router = express.Router();
  *           schema:
  *             type: object
  *             required:
- *               - code
- *               - name
+ *               - levelId
+ *               - title
  *             properties:
- *               code:
+ *               levelId:
  *                 type: string
- *                 example: fr
- *               name:
+ *               title:
  *                 type: string
- *                 example: Français
  *               description:
  *                 type: string
- *                 example: Langue française
  *               iconUrl:
  *                 type: string
- *                 example: https://cdn.lingualearn.com/icons/fr.png
+ *               index:
+ *                 type: integer
  *               isActive:
  *                 type: boolean
- *                 example: true
  *     responses:
  *       201:
- *         description: Langue créée
+ *         description: Module créé
  *       400:
  *         description: Données invalides
  */
@@ -50,22 +47,22 @@ router.post('/', controller.create);
 
 /**
  * @swagger
- * /api/v1/languages:
+ * /api/v1/modules:
  *   get:
- *     summary: Lister toutes les langues
- *     tags: [Languages]
+ *     summary: Lister tous les modules
+ *     tags: [Modules]
  *     responses:
  *       200:
- *         description: Liste des langues
+ *         description: Liste des modules
  */
 router.get('/', controller.getAll);
 
 /**
  * @swagger
- * /api/v1/languages/{id}:
+ * /api/v1/modules/{id}:
  *   get:
- *     summary: Obtenir une langue par ID
- *     tags: [Languages]
+ *     summary: Obtenir un module par ID
+ *     tags: [Modules]
  *     parameters:
  *       - in: path
  *         name: id
@@ -74,18 +71,18 @@ router.get('/', controller.getAll);
  *           type: string
  *     responses:
  *       200:
- *         description: Langue trouvée
+ *         description: Module trouvé
  *       404:
- *         description: Langue non trouvée
+ *         description: Module non trouvé
  */
 router.get('/:id', controller.getById);
 
 /**
  * @swagger
- * /api/v1/languages/{id}:
+ * /api/v1/modules/{id}:
  *   put:
- *     summary: Modifier une langue
- *     tags: [Languages]
+ *     summary: Modifier un module
+ *     tags: [Modules]
  *     parameters:
  *       - in: path
  *         name: id
@@ -99,32 +96,32 @@ router.get('/:id', controller.getById);
  *           schema:
  *             type: object
  *             properties:
- *               code:
- *                 type: string
- *               name:
+ *               title:
  *                 type: string
  *               description:
  *                 type: string
  *               iconUrl:
  *                 type: string
+ *               index:
+ *                 type: integer
  *               isActive:
  *                 type: boolean
  *     responses:
  *       200:
- *         description: Langue modifiée
+ *         description: Module modifié
  *       400:
  *         description: Données invalides
  *       404:
- *         description: Langue non trouvée
+ *         description: Module non trouvé
  */
 router.put('/:id', controller.update);
 
 /**
  * @swagger
- * /api/v1/languages/{id}:
+ * /api/v1/modules/{id}:
  *   delete:
- *     summary: Supprimer une langue
- *     tags: [Languages]
+ *     summary: Supprimer un module
+ *     tags: [Modules]
  *     parameters:
  *       - in: path
  *         name: id
@@ -133,9 +130,9 @@ router.put('/:id', controller.update);
  *           type: string
  *     responses:
  *       204:
- *         description: Langue supprimée
+ *         description: Module supprimé
  *       404:
- *         description: Langue non trouvée
+ *         description: Module non trouvé
  */
 router.delete('/:id', controller.remove);
 

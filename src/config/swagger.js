@@ -39,64 +39,108 @@ const options = {
         bearerAuth: [],
       },
     ],
-    tags: [
-      {
-        name: 'Authentication',
-        description: 'Endpoints d\'authentification (inscription, connexion, etc.)',
-      },
-      {
-        name: 'Users',
-        description: 'Gestion du profil utilisateur',
-      },
-      {
-        name: 'LearningPaths',
-        description: 'Gestion des parcours (LearningPath)'
-      },
-      {
-        name: 'Levels',
-        description: 'Gestion des niveaux (Level)'
-      },
-      {
-        name: 'Steps',
-        description: 'Gestion des étapes (Step)'
-      },
-      {
-        name: 'Exercises',
-        description: 'Gestion des exercices (Exercise)'
-      },
-      {
-        name: 'StepQuizzes',
-        description: 'Gestion des quiz d\'étape (StepQuiz)'
-      },
-      {
-        name: 'AdminDashboard',
-        description: 'Statistiques et état global de la plateforme'
-      },
-      {
-        name: 'SubscriptionPlans',
-        description: 'Gestion des plans d\'abonnement'
-      },
-      {
-        name: 'Subscriptions',
-        description: 'Gestion des abonnements clients'
-      },
-      {
-        name: 'MessagesWS',
-        description: 'Messagerie temps réel (WebSocket)'
-      },
-      {
-        name: 'Notifications',
-        description: 'Gestion des notifications (REST + WebSocket)'
-      },
-      {
-        name: 'Gamification',
-        description: 'Gestion des badges et récompenses'
-      },
-      {
-        name: 'Course',
-        description: 'Gestion des cours (Course)'
-      },
-    ],
+    // tags: [
+    //   {
+    //     name: 'Authentication',
+    //     description: 'Endpoints d\'authentification (inscription, connexion, etc.)',
+    //   },
+    //   {
+    //     name: 'Users',
+    //     description: 'Gestion du profil utilisateur',
+    //   },
+    //   {
+    //     name: 'LearningPaths',
+    //     description: 'Gestion des parcours (LearningPath)'
+    //   },
+    //   {
+    //     name: 'Levels',
+    //     description: 'Gestion des niveaux (Level)'
+    //   },
+    //   {
+    //     name: 'Steps',
+    //     description: 'Gestion des étapes (Step)'
+    //   },
+    //   {
+    //     name: 'Exercises',
+    //     description: 'Gestion des exercices (Exercise)'
+    //   },
+    //   {
+    //     name: 'StepQuizzes',
+    //     description: 'Gestion des quiz d\'étape (StepQuiz)'
+    //   },
+    //   {
+    //     name: 'AdminDashboard',
+    //     description: 'Statistiques et état global de la plateforme'
+    //   },
+    //   {
+    //     name: 'SubscriptionPlans',
+    //     description: 'Gestion des plans d\'abonnement'
+    //   },
+    //   {
+    //     name: 'Subscriptions',
+    //     description: 'Gestion des abonnements clients'
+    //   },
+    //   {
+    //     name: 'MessagesWS',
+    //     description: 'Messagerie temps réel (WebSocket)'
+    //   },
+    //   {
+    //     name: 'Notifications',
+    //     description: 'Gestion des notifications (REST + WebSocket)'
+    //   },
+    //   {
+    //     name: 'Gamification',
+    //     description: 'Gestion des badges et récompenses'
+    //   },
+    //   {
+    //     name: 'Course',
+    //     description: 'Gestion des cours (Course)'
+    //   },
+    //   {
+    //     name: 'Levels',
+    //     description: 'Gestion des niveaux (Level)'
+    //   },
+    //   {
+    //     name: 'Steps',
+    //     description: 'Gestion des étapes (Step)'
+    //   },
+    //   {
+    //     name: 'Exercises',
+    //     description: 'Gestion des exercices (Exercise)'
+    //   },
+    //   {
+    //     name: 'StepQuizzes',
+    //     description: 'Gestion des quiz d\'étape (StepQuiz)'
+    //   },
+    //   {
+    //     name: 'AdminDashboard',
+    //     description: 'Statistiques et état global de la plateforme'
+    //   },
+    //   {
+    //     name: 'SubscriptionPlans',
+    //     description: 'Gestion des plans d\'abonnement'
+    //   },
+    //   {
+    //     name: 'Subscriptions',
+    //     description: 'Gestion des abonnements clients'
+    //   },
+    //   {
+    //     name: 'MessagesWS',
+    //     description: 'Messagerie temps réel (WebSocket)'
+    //   },
+    //   {
+    //     name: 'Notifications',
+    //     description: 'Gestion des notifications (REST + WebSocket)'
+    //   },
+    //   {
+    //     name: 'Gamification',
+    //     description: 'Gestion des badges et récompenses'
+    //   },
+    //   {
+    //     name: 'Course',
+    //     description: 'Gestion des cours (Course)'
+    //   },
+    // ],
   },
   apis: [
     './src/routes/index.js',
@@ -114,6 +158,8 @@ const options = {
     './src/modules/notification/notification.routes.js',
     './src/modules/gamification/gamification.routes.js',
     './src/modules/course/course.routes.js',
+    './src/modules/module/module.routes.js',
+    './src/modules/language/language.routes.js',
   ],
 };
 

@@ -168,6 +168,27 @@ class EmailService {
 
         return this.sendEmail(email, 'Password Changed Successfully', html);
     }
+
+    /* =========================
+       BIENVENUE & INSCRIPTION ENFANT
+    ========================== */
+    async sendWelcomeChildEmail(email, username) {
+        const html = this.emailTemplate({
+            title: 'Bienvenue sur Lingualearn !',
+            message: `
+                <p>Votre compte enfant a bien été créé.</p>
+                <p>Voici vos informations de connexion :</p>
+                <ul>
+                  <li><strong>Nom d'utilisateur :</strong> <span style="color:#2563eb;">${username}</span></li>
+                  <li><strong>Mot de passe :</strong> Celui que vous avez défini ou reçu</li>
+                </ul>
+                <p>Conservez bien ces informations pour accéder à la plateforme.</p>
+            `,
+            color: '#2563eb',
+            footerNote: 'Pour toute question, contactez notre support.'
+        });
+        return this.sendEmail(email, 'Bienvenue sur Lingualearn', html);
+    }
 }
 
 const emailService = new EmailService();

@@ -4,23 +4,24 @@ const crypto = require('crypto');
 const { prisma } = require('../../config/prisma');
 const { appConfig } = require('../../config/appConfig');
 const { AppError } = require('../../middleware/errorHandler');
+const {allowRoles} = require('../../middleware/authMiddleware');
 const { emailService } = require('../../utils/emailService');
 const { logger } = require('../../utils/logger');
 
 class AuthService {
     // ============ INSCRIPTION ============
-    async register(data) {
+     async register(data) {
         const { email, phone, password, username, accountType, parentId, firstName, lastName } = data;
 
         // Mapper accountType (du frontend) vers accountType (pour Prisma)
             const ACCOUNT_TYPE_MAP = {
                 admin: 'admin',
-                user: 'learner',
-                sub_user: 'sub_account_learner',
+                learner: 'learner',
+                sub_account_learner: 'sub_account_learner',
                 teacher: 'teacher',
-                manager: 'plateform_manager',
+                plateform_manager: 'plateform_manager',
             };
-            const finalAccountType = ACCOUNT_TYPE_MAP[accountType] || 'learner';
+            const finalAccountType = ACCOUNT_TYPE_MAP[accountType];
 
         // Vérifier que l'utilisateur fournit soit email, soit phone
         if (!email && !phone) {
@@ -43,9 +44,38 @@ class AuthService {
             }
         }
 
+        // Générer automatiquement le username pour un compte enfant OU learner (sans indicatif pays)
+        let generatedUsername = username;
+        if ((finalAccountType === 'sub_account_learner' || finalAccountType === 'learner') && parentId) {
+            const parent = await prisma.user.findFirst({
+                where: { id: parentId, accountType: 'learner' },
+                select: { phone: true },
+            });
+            if (!parent) {
+                throw new AppError(400, 'Parent account not found or invalid');
+            }
+            let parentPhone = parent.phone || '';
+            parentPhone = parentPhone.replace(/^\+\d{3}/, '');
+            const firstFour = parentPhone.replace(/\D/g, '').slice(0, 4).padEnd(4, '0');
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = String(now.getFullYear());
+            const dateStr = `${day}${month}${year}`;
+            let baseUsername = `${firstFour}-EDU-${dateStr}`;
+            let suffix = 1;
+            let uniqueUsername = baseUsername;
+            // Vérifier l'unicité et incrémenter si besoin
+            while (await prisma.user.findUnique({ where: { username: uniqueUsername } })) {
+                uniqueUsername = `${baseUsername}-${suffix}`;
+                suffix++;
+            }
+            generatedUsername = uniqueUsername;
+        }
+
         // Vérifier si le username existe déjà
-        if (username) {
-            const existingUser = await prisma.user.findUnique({ where: { username } });
+        if (generatedUsername) {
+            const existingUser = await prisma.user.findUnique({ where: { username: generatedUsername } });
             if (existingUser) {
                 throw new AppError(400, 'Username already taken');
             }
@@ -69,7 +99,7 @@ class AuthService {
                 data: {
                     email,
                     phone,
-                    username,
+                    username: generatedUsername,
                     passwordHash,
                     accountType: finalAccountType,
                     parentId: finalAccountType === 'sub_account_learner' ? parentId : null,
@@ -94,6 +124,11 @@ class AuthService {
                 await emailService.sendVerificationEmail(email, code);
             }
             // (Optionnel) Envoi par SMS si phone fourni
+        }
+
+        // Envoi d'un email de bienvenue avec le username pour les comptes enfants
+        if (finalAccountType === 'sub_account_learner' && email && generatedUsername) {
+            await emailService.sendWelcomeChildEmail(email, generatedUsername);
         }
 
         return { success: true, message: 'User registered successfully' };

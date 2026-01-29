@@ -8,11 +8,21 @@ exports.create = async (data) => {
 		const max = await prisma.language.aggregate({ _max: { index: true } });
 		index = (max._max.index ?? 0) + 1;
 	}
+
 	// Vérifier unicité de l'index
-	const existing = await prisma.language.findFirst({ where: { index } });
-	if (existing) {
+	const existingIndex = await prisma.language.findFirst({ where: { index } });
+	if (existingIndex) {
 		throw new Error('Une langue avec ce même index existe déjà.');
 	}
+
+	// Vérifier unicité du code
+	if (data.code) {
+		const existingCode = await prisma.language.findUnique({ where: { code: data.code } });
+		if (existingCode) {
+			throw new Error('Une langue avec ce code existe déjà.');
+		}
+	}
+
 	return await prisma.language.create({ data: { ...data, index } });
 };
 

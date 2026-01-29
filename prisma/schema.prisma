@@ -1,3 +1,11 @@
+// === DISCOVERY SESSION (for anonymous discovery flow) ===
+model DiscoverySession {
+  id        String   @id @db.VarChar(50)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("discovery_sessions")
+}
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")

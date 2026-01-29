@@ -33,13 +33,31 @@ const options = {
           description: 'JWT Authorization header using the Bearer scheme. Format: Bearer {token}',
         },
       },
+      schemas: {
+        Language: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', example: 'clq1x2abc0000v2l3k9x9x9x9' },
+            code: { type: 'string', example: 'FR' },
+            name: { type: 'string', example: 'Français' },
+            description: { type: 'string', example: 'Langue française' },
+            iconUrl: { type: 'string', example: 'https://cdn.lingualearn.com/icons/fr.png' },
+            isActive: { type: 'boolean', example: true },
+            index: { type: 'integer', example: 1 }
+          }
+        }
+      }
     },
     security: [
       {
         bearerAuth: [],
       },
     ],
-    // tags: [
+    tags: [
+      {
+        name: 'Discover',
+        description: 'Découverte de l\'application, choix de langue, exercices de découverte, etc.'
+      },
     //   {
     //     name: 'Authentication',
     //     description: 'Endpoints d\'authentification (inscription, connexion, etc.)',
@@ -140,7 +158,7 @@ const options = {
     //     name: 'Course',
     //     description: 'Gestion des cours (Course)'
     //   },
-    // ],
+    ],
   },
   apis: [
     './src/routes/index.js',
@@ -160,6 +178,8 @@ const options = {
     './src/modules/course/course.routes.js',
     './src/modules/module/module.routes.js',
     './src/modules/language/language.routes.js',
+    './src/modules/evaluation/evaluation.routes.js',
+    './src/modules/discover/discover.routes.js',
   ],
 };
 

@@ -49,7 +49,8 @@ class AuthService {
     }
 
     // Générer username automatiquement pour les comptes learners ou sub_account_learner
-    let generatedUsername = username;
+    let generatedUsername = username ?? null;
+    // Générer automatiquement le username uniquement pour learner et sub_account_learner
     if ((finalAccountType === 'sub_account_learner' || finalAccountType === 'learner') && parentId) {
         const parent = await prisma.user.findFirst({
             where: { id: parentId, accountType: 'learner' },

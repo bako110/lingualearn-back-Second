@@ -51,6 +51,4 @@ router.get('/', (req, res) => {
   });
 });
 
-const mainRouter = express.Router();
-mainRouter.use('/api/v1', router);
-module.exports = mainRouter;
+module.exports = router;

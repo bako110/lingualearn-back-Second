@@ -4,14 +4,20 @@ const { AppError } = require('../../middleware/errorHandler');
 class UserService {
     // Récupérer tous les utilisateurs (la gestion des rôles est déléguée à la route/controller)
     async getAllUsers(filters = {}) {
-        const { page = 1, limit = 20, userType, status, search } = filters;
+        const { page = 1, limit = 20, userType, isActive, isVerified, firstLogin, search } = filters;
         const skip = (page - 1) * limit;
         const where = {};
         if (userType) {
             where.accountType = userType;
         }
-        if (status) {
-            where.status = status;
+        if (isActive !== undefined) {
+            where.isActive = isActive;
+        }
+        if (isVerified !== undefined) {
+            where.isVerified = isVerified;
+        }
+        if (firstLogin !== undefined) {
+            where.firstLogin = firstLogin;
         }
         if (search) {
             where.OR = [
@@ -30,6 +36,8 @@ class UserService {
                     username: true,
                     accountType: true,
                     isVerified: true,
+                    isActive: true,
+                    firstLogin: true,
                     lastLogin: true,
                     lastActive: true,
                     createdAt: true
@@ -66,7 +74,8 @@ class UserService {
                 isVerified: true,
                 subscriptionPlan: true,
                 subscriptionEndsAt: true,
-                status: true,
+                isActive: true,
+                firstLogin: true,
                 lastLogin: true,
                 lastActive: true,
                 createdAt: true,
@@ -117,7 +126,9 @@ class UserService {
         }
         // Champs administratifs (à gérer côté route/controller)
         if (data.accountType !== undefined) updateData.accountType = data.accountType;
-        if (data.status !== undefined) updateData.status = data.status;
+        if (data.isActive !== undefined) updateData.isActive = data.isActive;
+        if (data.isVerified !== undefined) updateData.isVerified = data.isVerified;
+        if (data.firstLogin !== undefined) updateData.firstLogin = data.firstLogin;
         if (data.subscriptionPlan !== undefined) updateData.subscriptionPlan = data.subscriptionPlan;
         if (data.subscriptionEndsAt !== undefined) updateData.subscriptionEndsAt = data.subscriptionEndsAt;
         // Mettre à jour l'utilisateur
@@ -131,7 +142,8 @@ class UserService {
                 username: true,
                 accountType: true,
                 isVerified: true,
-                status: true,
+                isActive: true,
+                firstLogin: true,
                 subscriptionPlan: true,
                 subscriptionEndsAt: true,
                 updatedAt: true
@@ -147,7 +159,7 @@ class UserService {
             throw new AppError(404, 'User not found');
         }
         // Soft delete: changer le statut
-        await prisma.user.update({ where: { id }, data: { status: 'deleted' } });
+        await prisma.user.update({ where: { id }, data: { isActive: false } });
         // Invalider toutes les sessions
         await prisma.session.deleteMany({ where: { userId: id } });
         // Invalider tous les refresh tokens
@@ -161,7 +173,7 @@ class UserService {
             SELECT 
                 COUNT(*) as total_users,
                 COUNT(CASE WHEN "isVerified" = true THEN 1 END) as verified_users,
-                COUNT(CASE WHEN "status" = 'active' THEN 1 END) as active_users,
+                COUNT(CASE WHEN "isActive" = true THEN 1 END) as active_users,
                 COUNT(CASE WHEN "accountType" = 'admin' THEN 1 END) as admin_users,
                 COUNT(CASE WHEN "accountType" = 'learner' THEN 1 END) as learner_users,
                 COUNT(CASE WHEN "accountType" = 'child' THEN 1 END) as child_users,

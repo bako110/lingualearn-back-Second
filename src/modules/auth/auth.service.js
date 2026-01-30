@@ -131,7 +131,13 @@ class AuthService {
             await emailService.sendWelcomeChildEmail(email, generatedUsername);
         }
 
-        return { success: true, message: 'User registered successfully' };
+        // Retourner le username dans la réponse pour affichage/confirmation côté client
+        return {
+            success: true,
+            message: 'User registered successfully',
+            username: generatedUsername,
+            email: user.email
+        };
     }
 
     // ============ CONNEXION ============

@@ -48,33 +48,41 @@ class AuthService {
         if (existingPhone) throw new AppError(400, 'A user already exists with this phone number');
     }
 
-    // Générer username automatiquement pour les comptes learners ou sub_account_learner
+    // Générer username automatiquement pour les learners et sub_account_learner
     let generatedUsername = username ?? null;
-    // Générer automatiquement le username uniquement pour learner et sub_account_learner
-    if ((finalAccountType === 'sub_account_learner' || finalAccountType === 'learner') && parentId) {
+    if (finalAccountType === 'sub_account_learner' && parentId) {
+        // Génération basée sur le parent
         const parent = await prisma.user.findFirst({
             where: { id: parentId, accountType: 'learner' },
             select: { phone: true },
         });
-        if (!parent || !parent.phone) throw new AppError(400, 'Parent account not found or invalid');
-
-        let parentPhone = parent.phone.replace(/^\+\d{3}/, '');
+        let parentPhone = parent && parent.phone ? parent.phone.replace(/^\+\d{3}/, '') : '';
         const firstFour = parentPhone.replace(/\D/g, '').slice(0, 4).padEnd(4, '0');
-
         const now = new Date();
         const day = String(now.getDate()).padStart(2, '0');
         const month = String(now.getMonth() + 1).padStart(2, '0');
         const year = now.getFullYear();
-
         const baseUsername = `${firstFour}-EDU-${day}${month}${year}`;
         let uniqueUsername = baseUsername;
         let suffix = 1;
-
         while (await prisma.user.findUnique({ where: { username: uniqueUsername } })) {
             uniqueUsername = `${baseUsername}-${suffix}`;
             suffix++;
         }
-
+        generatedUsername = uniqueUsername;
+    } else if (finalAccountType === 'learner') {
+        // Génération pour learner sans parent
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0');
+        const year = now.getFullYear();
+        const baseUsername = `EDU-${day}${month}${year}`;
+        let uniqueUsername = baseUsername;
+        let suffix = 1;
+        while (await prisma.user.findUnique({ where: { username: uniqueUsername } })) {
+            uniqueUsername = `${baseUsername}-${suffix}`;
+            suffix++;
+        }
         generatedUsername = uniqueUsername;
     }
 
@@ -101,7 +109,7 @@ class AuthService {
 
     // Envoi email de bienvenue pour learners et sub_account_learner
     if ((finalAccountType === 'learner' || finalAccountType === 'sub_account_learner') && email && generatedUsername) {
-        await emailService.sendWelcomeLearnerEmail(email, generatedUsername);
+        await emailService.sendWelcomeChildEmail(email, generatedUsername);
     }
 
     return {

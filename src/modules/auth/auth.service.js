@@ -78,8 +78,10 @@ class AuthService {
         generatedUsername = uniqueUsername;
     }
 
-    const existingUsername = await prisma.user.findUnique({ where: { username: generatedUsername } });
-    if (existingUsername) throw new AppError(400, 'Username already taken');
+    if (generatedUsername) {
+        const existingUsername = await prisma.user.findUnique({ where: { username: generatedUsername } });
+        if (existingUsername) throw new AppError(400, 'Username already taken');
+    }
 
     const passwordHash = await bcrypt.hash(password, 12);
 

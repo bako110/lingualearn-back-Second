@@ -8,7 +8,11 @@ async function create(req, res, next) {
 		const level = await service.createLevel({
 			name: value.name,
 			description: value.description,
-			learningPathId: value.learningPathId
+			learningPathId: value.learningPathId,
+			languageId: value.languageId,
+			code: value.code,
+			index: value.index,
+			isActive: value.isActive
 		});
 		res.status(201).json(level);
 	} catch (err) {

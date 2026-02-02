@@ -15,7 +15,9 @@ async function createLevel(data) {
 	if (existing) {
 		throw new Error('Un niveau avec ce même index existe déjà pour cette langue.');
 	}
-	return prisma.level.create({ data: { ...data, index } });
+	// S'assurer que le champ code est toujours présent
+	const code = data.code ?? `LEVEL-${index}`;
+	return prisma.level.create({ data: { ...data, index, code } });
 }
 
 async function getAllLevels() {

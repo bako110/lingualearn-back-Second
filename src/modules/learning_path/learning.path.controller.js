@@ -1,3 +1,33 @@
+// Progression endpoints
+exports.selectPath = async (req, res, next) => {
+       try {
+	       const { userId, pathId } = req.params;
+	       const progress = await service.selectPathForUser(userId, pathId);
+	       res.status(201).json({ success: true, data: progress });
+       } catch (err) {
+	       next(err);
+       }
+};
+
+exports.startPath = async (req, res, next) => {
+       try {
+	       const { userId, pathId } = req.params;
+	       const progress = await service.startPathForUser(userId, pathId);
+	       res.json({ success: true, data: progress });
+       } catch (err) {
+	       next(err);
+       }
+};
+
+exports.completePath = async (req, res, next) => {
+       try {
+	       const { userId, pathId } = req.params;
+	       const progress = await service.completePathForUser(userId, pathId);
+	       res.json({ success: true, data: progress });
+       } catch (err) {
+	       next(err);
+       }
+};
 
 const service = require('./learning.path.service');
 const { createLearningPathSchema, updateLearningPathSchema } = require('./learning.path.schema');
@@ -91,5 +121,8 @@ module.exports = {
 	getById,
 	update,
 	remove,
-	getByUserId
+	getByUserId,
+	selectPath: exports.selectPath,
+	startPath: exports.startPath,
+	completePath: exports.completePath
 };

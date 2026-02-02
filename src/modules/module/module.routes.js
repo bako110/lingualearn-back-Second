@@ -156,4 +156,74 @@ router.delete('/:id', controller.remove);
  */
 router.get('/api/v1/users/:userId/modules', controller.getByUserId);
 
+
+/**
+ * @swagger
+ * /api/v1/users/{userId}/modules/{moduleId}/select:
+ *   post:
+ *     summary: Sélectionner un module pour un utilisateur
+ *     tags: [Modules]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: moduleId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       201:
+ *         description: Progression créée ou existante
+ */
+router.post('/api/v1/users/:userId/modules/:moduleId/select', controller.selectModule);
+
+/**
+ * @swagger
+ * /api/v1/users/{userId}/modules/{moduleId}/start:
+ *   post:
+ *     summary: Démarrer un module pour un utilisateur
+ *     tags: [Modules]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: moduleId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Progression mise à jour
+ */
+router.post('/api/v1/users/:userId/modules/:moduleId/start', controller.startModule);
+
+/**
+ * @swagger
+ * /api/v1/users/{userId}/modules/{moduleId}/complete:
+ *   post:
+ *     summary: Valider un module pour un utilisateur
+ *     tags: [Modules]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: moduleId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Progression mise à jour
+ */
+router.post('/api/v1/users/:userId/modules/:moduleId/complete', controller.completeModule);
+
 module.exports = router;

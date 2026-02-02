@@ -5,6 +5,29 @@ exports.getStepsByUserId = async (userId) => {
     include: { step: true }
   });
 };
+
+// Progression utilisateur pour Step
+exports.selectStepForUser = async (userId, stepId) => {
+  let progress = await prisma.userStepProgress.findUnique({ where: { userId_stepId: { userId, stepId } } });
+  if (!progress) {
+    progress = await prisma.userStepProgress.create({ data: { userId, stepId, status: 'locked' } });
+  }
+  return progress;
+};
+
+exports.startStepForUser = async (userId, stepId) => {
+  return prisma.userStepProgress.update({
+    where: { userId_stepId: { userId, stepId } },
+    data: { status: 'started', startedAt: new Date() }
+  });
+};
+
+exports.completeStepForUser = async (userId, stepId) => {
+  return prisma.userStepProgress.update({
+    where: { userId_stepId: { userId, stepId } },
+    data: { status: 'completed', completedAt: new Date() }
+  });
+};
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 

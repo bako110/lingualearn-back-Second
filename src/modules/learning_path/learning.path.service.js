@@ -1,12 +1,33 @@
 // Récupérer tous les parcours liés à un utilisateur (via userPathProgress)
 async function getPathsByUserId(userId) {
-	return prisma.userPathProgress.findMany({
-		where: { userId },
-		include: { path: true }
-	});
+       return prisma.userPathProgress.findMany({
+	       where: { userId },
+	       include: { path: true }
+       });
 }
 
-module.exports.getPathsByUserId = getPathsByUserId;
+// Progression utilisateur pour Path
+async function selectPathForUser(userId, pathId) {
+       let progress = await prisma.userPathProgress.findUnique({ where: { userId_pathId: { userId, pathId } } });
+       if (!progress) {
+	       progress = await prisma.userPathProgress.create({ data: { userId, pathId, status: 'locked' } });
+       }
+       return progress;
+}
+
+async function startPathForUser(userId, pathId) {
+       return prisma.userPathProgress.update({
+	       where: { userId_pathId: { userId, pathId } },
+	       data: { status: 'started', startedAt: new Date() }
+       });
+}
+
+async function completePathForUser(userId, pathId) {
+       return prisma.userPathProgress.update({
+	       where: { userId_pathId: { userId, pathId } },
+	       data: { status: 'completed', completedAt: new Date() }
+       });
+}
 
 const { prisma } = require('../../config/prisma');
 
@@ -35,5 +56,9 @@ module.exports = {
 	getAllPaths,
 	getPathById,
 	updatePath,
-	deletePath
+	deletePath,
+	getPathsByUserId,
+	selectPathForUser,
+	startPathForUser,
+	completePathForUser
 };

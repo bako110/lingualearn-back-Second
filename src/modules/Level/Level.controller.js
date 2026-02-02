@@ -72,11 +72,46 @@ async function remove(req, res, next) {
 	}
 }
 
+
+// Progression endpoints
+exports.selectLevel = async (req, res, next) => {
+       try {
+	       const { userId, levelId } = req.params;
+	       const progress = await service.selectLevelForUser(userId, levelId);
+	       res.status(201).json({ success: true, data: progress });
+       } catch (err) {
+	       next(err);
+       }
+};
+
+exports.startLevel = async (req, res, next) => {
+       try {
+	       const { userId, levelId } = req.params;
+	       const progress = await service.startLevelForUser(userId, levelId);
+	       res.json({ success: true, data: progress });
+       } catch (err) {
+	       next(err);
+       }
+};
+
+exports.completeLevel = async (req, res, next) => {
+       try {
+	       const { userId, levelId } = req.params;
+	       const progress = await service.completeLevelForUser(userId, levelId);
+	       res.json({ success: true, data: progress });
+       } catch (err) {
+	       next(err);
+       }
+};
+
 module.exports = {
 	create,
 	getAll,
 	getById,
 	update,
 	remove,
-	getByUserId
+	getByUserId,
+	selectLevel: exports.selectLevel,
+	startLevel: exports.startLevel,
+	completeLevel: exports.completeLevel
 };

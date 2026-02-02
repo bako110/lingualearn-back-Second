@@ -161,4 +161,74 @@ router.delete('/:id', authMiddleware, allowRoles('admin', 'plateform_manager'), 
  */
 router.get('/api/v1/users/:userId/levels', controller.getByUserId);
 
+
+/**
+ * @swagger
+ * /api/v1/users/{userId}/levels/{levelId}/select:
+ *   post:
+ *     summary: Sélectionner un niveau pour un utilisateur
+ *     tags: [Levels]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: levelId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       201:
+ *         description: Progression créée ou existante
+ */
+router.post('/api/v1/users/:userId/levels/:levelId/select', controller.selectLevel);
+
+/**
+ * @swagger
+ * /api/v1/users/{userId}/levels/{levelId}/start:
+ *   post:
+ *     summary: Démarrer un niveau pour un utilisateur
+ *     tags: [Levels]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: levelId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Progression mise à jour
+ */
+router.post('/api/v1/users/:userId/levels/:levelId/start', controller.startLevel);
+
+/**
+ * @swagger
+ * /api/v1/users/{userId}/levels/{levelId}/complete:
+ *   post:
+ *     summary: Valider un niveau pour un utilisateur
+ *     tags: [Levels]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: levelId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Progression mise à jour
+ */
+router.post('/api/v1/users/:userId/levels/:levelId/complete', controller.completeLevel);
+
 module.exports = router;

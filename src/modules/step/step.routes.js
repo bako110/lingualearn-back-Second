@@ -170,4 +170,74 @@ router.delete('/:id', controller.remove);
  */
 router.get('/api/v1/users/:userId/steps', controller.getByUserId);
 
+
+/**
+ * @swagger
+ * /api/v1/users/{userId}/steps/{stepId}/select:
+ *   post:
+ *     summary: Sélectionner une étape pour un utilisateur
+ *     tags: [Steps]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: stepId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       201:
+ *         description: Progression créée ou existante
+ */
+router.post('/api/v1/users/:userId/steps/:stepId/select', controller.selectStep);
+
+/**
+ * @swagger
+ * /api/v1/users/{userId}/steps/{stepId}/start:
+ *   post:
+ *     summary: Démarrer une étape pour un utilisateur
+ *     tags: [Steps]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: stepId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Progression mise à jour
+ */
+router.post('/api/v1/users/:userId/steps/:stepId/start', controller.startStep);
+
+/**
+ * @swagger
+ * /api/v1/users/{userId}/steps/{stepId}/complete:
+ *   post:
+ *     summary: Valider une étape pour un utilisateur
+ *     tags: [Steps]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *       - in: path
+ *         name: stepId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Progression mise à jour
+ */
+router.post('/api/v1/users/:userId/steps/:stepId/complete', controller.completeStep);
+
 module.exports = router;

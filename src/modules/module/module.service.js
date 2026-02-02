@@ -5,6 +5,29 @@ exports.getModulesByUserId = async (userId) => {
     include: { module: true }
   });
 };
+
+// Progression utilisateur pour Module
+exports.selectModuleForUser = async (userId, moduleId) => {
+  let progress = await prisma.userModuleProgress.findUnique({ where: { userId_moduleId: { userId, moduleId } } });
+  if (!progress) {
+    progress = await prisma.userModuleProgress.create({ data: { userId, moduleId, status: 'locked' } });
+  }
+  return progress;
+};
+
+exports.startModuleForUser = async (userId, moduleId) => {
+  return prisma.userModuleProgress.update({
+    where: { userId_moduleId: { userId, moduleId } },
+    data: { status: 'started', startedAt: new Date() }
+  });
+};
+
+exports.completeModuleForUser = async (userId, moduleId) => {
+  return prisma.userModuleProgress.update({
+    where: { userId_moduleId: { userId, moduleId } },
+    data: { status: 'completed', completedAt: new Date() }
+  });
+};
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 

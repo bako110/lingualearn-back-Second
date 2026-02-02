@@ -1,3 +1,33 @@
+// Progression endpoints
+exports.selectStep = async (req, res, next) => {
+  try {
+    const { userId, stepId } = req.params;
+    const progress = await stepService.selectStepForUser(userId, stepId);
+    res.status(201).json({ success: true, data: progress });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.startStep = async (req, res, next) => {
+  try {
+    const { userId, stepId } = req.params;
+    const progress = await stepService.startStepForUser(userId, stepId);
+    res.json({ success: true, data: progress });
+  } catch (err) {
+    next(err);
+  }
+};
+
+exports.completeStep = async (req, res, next) => {
+  try {
+    const { userId, stepId } = req.params;
+    const progress = await stepService.completeStepForUser(userId, stepId);
+    res.json({ success: true, data: progress });
+  } catch (err) {
+    next(err);
+  }
+};
 exports.getByUserId = async (req, res, next) => {
   try {
     const steps = await stepService.getStepsByUserId(req.params.userId);

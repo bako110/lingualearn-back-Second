@@ -1,3 +1,10 @@
+// Récupérer tous les modules liés à un utilisateur (via userModuleProgress)
+exports.getModulesByUserId = async (userId) => {
+  return await prisma.userModuleProgress.findMany({
+    where: { userId },
+    include: { module: true }
+  });
+};
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 

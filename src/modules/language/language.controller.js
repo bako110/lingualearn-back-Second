@@ -1,3 +1,14 @@
+exports.getByUserId = async (req, res, next) => {
+	try {
+		const languages = await service.getLanguagesByUserId(req.params.userId);
+		if (!languages || languages.length === 0) {
+			return res.status(404).json({ success: false, error: 'Aucune langue trouvée pour cet utilisateur' });
+		}
+		res.json({ success: true, data: languages });
+	} catch (err) {
+		next(err);
+	}
+};
 const service = require('./language.service');
 
 exports.create = async (req, res, next) => {

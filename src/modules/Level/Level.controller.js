@@ -1,3 +1,16 @@
+async function getByUserId(req, res, next) {
+	try {
+		const levels = await service.getLevelsByUserId(req.params.userId);
+		if (!levels || levels.length === 0) {
+			return res.status(404).json({ error: 'Aucun niveau trouvé pour cet utilisateur' });
+		}
+		res.json({ data: levels });
+	} catch (err) {
+		next(err);
+	}
+}
+
+module.exports.getByUserId = getByUserId;
 const service = require('./Level.service');
 const { createLevelSchema, updateLevelSchema } = require('./Level.schema');
 
@@ -64,5 +77,6 @@ module.exports = {
 	getAll,
 	getById,
 	update,
-	remove
+	remove,
+	getByUserId
 };

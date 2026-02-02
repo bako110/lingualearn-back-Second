@@ -1,3 +1,10 @@
+// Récupérer toutes les langues liées à un utilisateur (via userLanguageProgress)
+exports.getLanguagesByUserId = async (userId) => {
+	return await prisma.userLanguageProgress.findMany({
+		where: { userId },
+		include: { language: true }
+	});
+};
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 

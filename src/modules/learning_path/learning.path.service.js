@@ -1,3 +1,12 @@
+// Récupérer tous les parcours liés à un utilisateur (via userPathProgress)
+async function getPathsByUserId(userId) {
+	return prisma.userPathProgress.findMany({
+		where: { userId },
+		include: { path: true }
+	});
+}
+
+module.exports.getPathsByUserId = getPathsByUserId;
 
 const { prisma } = require('../../config/prisma');
 

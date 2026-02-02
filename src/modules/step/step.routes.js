@@ -150,4 +150,24 @@ router.put('/:id', controller.update);
  */
 router.delete('/:id', controller.remove);
 
+/**
+ * @swagger
+ * /api/v1/users/{userId}/steps:
+ *   get:
+ *     summary: Récupérer les étapes liées à un utilisateur
+ *     tags: [Steps]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Liste des étapes liées à l'utilisateur
+ *       404:
+ *         description: Aucune étape trouvée pour cet utilisateur
+ */
+router.get('/api/v1/users/:userId/steps', controller.getByUserId);
+
 module.exports = router;

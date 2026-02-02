@@ -136,4 +136,24 @@ router.put('/:id', controller.update);
  */
 router.delete('/:id', controller.remove);
 
+/**
+ * @swagger
+ * /api/v1/users/{userId}/modules:
+ *   get:
+ *     summary: Récupérer les modules liés à un utilisateur
+ *     tags: [Modules]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Liste des modules liés à l'utilisateur
+ *       404:
+ *         description: Aucun module trouvé pour cet utilisateur
+ */
+router.get('/api/v1/users/:userId/modules', controller.getByUserId);
+
 module.exports = router;

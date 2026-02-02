@@ -1,3 +1,12 @@
+// Récupérer tous les niveaux liés à un utilisateur (via userLevelProgress)
+async function getLevelsByUserId(userId) {
+	return prisma.userLevelProgress.findMany({
+		where: { userId },
+		include: { level: true }
+	});
+}
+
+module.exports.getLevelsByUserId = getLevelsByUserId;
 const { prisma } = require('../../config/prisma');
 
 async function createLevel(data) {

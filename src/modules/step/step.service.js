@@ -1,3 +1,10 @@
+// Récupérer toutes les étapes liées à un utilisateur (via userStepProgress)
+exports.getStepsByUserId = async (userId) => {
+  return await prisma.userStepProgress.findMany({
+    where: { userId },
+    include: { step: true }
+  });
+};
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 

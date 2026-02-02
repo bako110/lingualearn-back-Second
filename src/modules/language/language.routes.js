@@ -140,4 +140,24 @@ router.put('/:id', authMiddleware, allowRoles('admin', 'plateform_manager'), con
  */
 router.delete('/:id', authMiddleware, allowRoles('admin', 'plateform_manager'), controller.remove);
 
+/**
+ * @swagger
+ * /api/v1/users/{userId}/languages:
+ *   get:
+ *     summary: Récupérer les langues liées à un utilisateur
+ *     tags: [Languages]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Liste des langues liées à l'utilisateur
+ *       404:
+ *         description: Aucune langue trouvée pour cet utilisateur
+ */
+router.get('/api/v1/users/:userId/languages', controller.getByUserId);
+
 module.exports = router;

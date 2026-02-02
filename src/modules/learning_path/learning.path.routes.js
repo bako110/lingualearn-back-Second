@@ -152,4 +152,24 @@ router.put('/:id', controller.update);
  */
 router.delete('/:id', controller.remove);
 
+/**
+ * @swagger
+ * /api/v1/users/{userId}/paths:
+ *   get:
+ *     summary: Récupérer les parcours liés à un utilisateur
+ *     tags: [Paths]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Liste des parcours liés à l'utilisateur
+ *       404:
+ *         description: Aucun parcours trouvé pour cet utilisateur
+ */
+router.get('/api/v1/users/:userId/paths', controller.getByUserId);
+
 module.exports = router;

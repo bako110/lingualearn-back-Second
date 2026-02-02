@@ -1,3 +1,14 @@
+exports.getByUserId = async (req, res, next) => {
+  try {
+    const steps = await stepService.getStepsByUserId(req.params.userId);
+    if (!steps || steps.length === 0) {
+      return res.status(404).json({ error: 'Aucune étape trouvée pour cet utilisateur' });
+    }
+    res.json({ data: steps });
+  } catch (err) {
+    next(err);
+  }
+};
 const stepService = require('./step.service');
 const { createStepSchema, updateStepSchema } = require('./step.schema');
 const { asyncHandler } = require('../../middleware/asyncHandler');

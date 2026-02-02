@@ -1,15 +1,29 @@
 const service = require('./learning.path.service');
 const { createLearningPathSchema, updateLearningPathSchema } = require('./learning.path.schema');
 
+// Helper to pick only allowed fields for Path creation
+function pickPathFields(body) {
+	return {
+		moduleId: body.moduleId,
+		title: body.title,
+		description: body.description,
+		index: body.index,
+		tempResaListime: body.tempResaListime,
+		thumbnailUrl: body.thumbnailUrl,
+		difficulty: body.difficulty,
+		estimatedHours: body.estimatedHours,
+		isActive: body.isActive
+	};
+}
+
 async function create(req, res, next) {
 	try {
 		const { error, value } = createLearningPathSchema.validate(req.body);
 		if (error) return res.status(400).json({ error: error.details[0].message });
-		// On ne garde que title et description pour la création
-		const path = await service.createLearningPath({
-			title: value.title,
-			description: value.description
-		});
+		// All required fields for Path creation
+		const data = pickPathFields(value);
+		if (!data.moduleId) return res.status(400).json({ error: 'moduleId is required' });
+		const path = await service.createPath(data);
 		res.status(201).json(path);
 	} catch (err) {
 		next(err);
@@ -18,7 +32,7 @@ async function create(req, res, next) {
 
 async function getAll(req, res, next) {
 	try {
-		const paths = await service.getAllLearningPaths();
+		const paths = await service.getAllPaths();
 		res.json(paths);
 	} catch (err) {
 		next(err);
@@ -27,8 +41,8 @@ async function getAll(req, res, next) {
 
 async function getById(req, res, next) {
 	try {
-		const path = await service.getLearningPathById(req.params.id);
-		if (!path) return res.status(404).json({ error: 'LearningPath not found' });
+		const path = await service.getPathById(req.params.id);
+		if (!path) return res.status(404).json({ error: 'Path not found' });
 		res.json(path);
 	} catch (err) {
 		next(err);
@@ -39,7 +53,8 @@ async function update(req, res, next) {
 	try {
 		const { error, value } = updateLearningPathSchema.validate(req.body);
 		if (error) return res.status(400).json({ error: error.details[0].message });
-		const path = await service.updateLearningPath(req.params.id, value);
+		const data = pickPathFields(value);
+		const path = await service.updatePath(req.params.id, data);
 		res.json(path);
 	} catch (err) {
 		next(err);
@@ -48,7 +63,7 @@ async function update(req, res, next) {
 
 async function remove(req, res, next) {
 	try {
-		await service.deleteLearningPath(req.params.id);
+		await service.deletePath(req.params.id);
 		res.status(204).send();
 	} catch (err) {
 		next(err);

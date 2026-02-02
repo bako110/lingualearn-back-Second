@@ -5,14 +5,13 @@
  *     Step:
  *       type: object
  *       required:
- *         - levelId
+ *         - pathId
  *         - title
- *         - description
- *         - stepNumber
+ *         - stepType
  *       properties:
- *         levelId:
+ *         pathId:
  *           type: string
- *           description: ID du niveau parent
+ *           description: ID du parcours parent
  *         title:
  *           type: string
  *           maxLength: 200
@@ -20,48 +19,30 @@
  *         description:
  *           type: string
  *           description: Description de l'étape
- *         stepNumber:
+ *         stepType:
+ *           type: string
+ *           enum: [lesson, exercise, quiz]
+ *           description: Type d'étape
+ *         index:
  *           type: integer
- *           description: Numéro de l'étape dans le niveau
- *         stepCode:
- *           type: string
- *           maxLength: 50
- *           nullable: true
- *         thumbnailUrl:
- *           type: string
- *           format: uri
- *           nullable: true
- *         iconUrl:
- *           type: string
- *           format: uri
- *           nullable: true
- *         estimatedDurationHours:
+ *           description: Ordre dans le parcours
+ *         estimatedMinutes:
  *           type: integer
- *           default: 1
- *         difficultyLevel:
- *           type: string
- *           enum: [beginner, intermediate, advanced]
- *           default: beginner
- *         isPublished:
- *           type: boolean
- *           default: false
- *         publishedAt:
- *           type: string
- *           format: date-time
- *           nullable: true
- *         sortOrder:
- *           type: integer
- *           description: Ordre d'affichage
+ *           default: 15
+ *           description: Durée estimée (minutes)
  *         isActive:
  *           type: boolean
  *           default: true
+ *           description: Statut d'activité
  *       example:
- *         levelId: "clq1k2v7d0000v8y6g7z6k2v6"
+ *         pathId: "clq1k2v7d0000v8y6g7z6k2v6"
  *         title: "Introduction à la grammaire"
- *         description: "Première étape du niveau débutant."
- *         stepNumber: 1
+ *         description: "Première étape du parcours."
+ *         stepType: "lesson"
+ *         index: 0
+ *         estimatedMinutes: 15
+ *         isActive: true
  */
-// ...existing code...
 const express = require('express');
 const controller = require('./step.controller');
 const router = express.Router();

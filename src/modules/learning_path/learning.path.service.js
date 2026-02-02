@@ -1,29 +1,30 @@
+
 const { prisma } = require('../../config/prisma');
 
-async function createLearningPath(data) {
-	return prisma.learningPath.create({ data });
+async function createPath(data) {
+	return prisma.path.create({ data });
 }
 
-async function getAllLearningPaths() {
-	return prisma.learningPath.findMany();
+async function getAllPaths() {
+	return prisma.path.findMany();
 }
 
-async function getLearningPathById(id) {
-	return prisma.learningPath.findUnique({ where: { id } });
+async function getPathById(id) {
+	return prisma.path.findUnique({ where: { id } });
 }
 
-async function updateLearningPath(id, data) {
-	return prisma.learningPath.update({ where: { id }, data });
+async function updatePath(id, data) {
+	return prisma.path.update({ where: { id }, data });
 }
 
-async function deleteLearningPath(id) {
-	return prisma.learningPath.delete({ where: { id } });
+async function deletePath(id) {
+	return prisma.path.delete({ where: { id } });
 }
 
 module.exports = {
-	createLearningPath,
-	getAllLearningPaths,
-	getLearningPathById,
-	updateLearningPath,
-	deleteLearningPath
+	createPath,
+	getAllPaths,
+	getPathById,
+	updatePath,
+	deletePath
 };

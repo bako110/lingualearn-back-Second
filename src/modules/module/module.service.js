@@ -2,6 +2,14 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
 exports.create = async (data) => {
+  // Vérifier que le levelId existe
+  if (!data.levelId) {
+    throw new Error('levelId est requis');
+  }
+  const level = await prisma.level.findUnique({ where: { id: data.levelId } });
+  if (!level) {
+    throw new Error('Le levelId fourni n\'existe pas');
+  }
   return await prisma.module.create({ data });
 };
 

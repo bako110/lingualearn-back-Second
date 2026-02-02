@@ -2,9 +2,11 @@ const stepService = require('./step.service');
 const { createStepSchema, updateStepSchema } = require('./step.schema');
 const { asyncHandler } = require('../../middleware/asyncHandler');
 
+
 exports.create = asyncHandler(async (req, res) => {
   const { error, value } = createStepSchema.validate(req.body);
   if (error) return res.status(400).json({ error: error.details[0].message });
+  // Only keep valid Step fields
   const step = await stepService.create(value);
   res.status(201).json(step);
 });
@@ -19,6 +21,7 @@ exports.getById = asyncHandler(async (req, res) => {
   if (!step) return res.status(404).json({ error: 'Step not found' });
   res.json(step);
 });
+
 
 exports.update = asyncHandler(async (req, res) => {
   const { error, value } = updateStepSchema.validate(req.body);

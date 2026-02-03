@@ -234,16 +234,39 @@ class AuthService {
         // Vérifier la première connexion
         let firstLogin = user.firstLogin;
         if (firstLogin) {
-            // Mettre à jour le flag firstLogin à false
-            await prisma.user.update({
-                where: { id: user.id },
-                data: { firstLogin: false, lastLogin: new Date(), lastActive: new Date() },
-            });
+            // Mettre à jour le flag firstLogin à false avec retry
+            await retryPrismaUpdate(() =>
+                prisma.user.update({
+                    where: { id: user.id },
+                    data: { firstLogin: false, lastLogin: new Date(), lastActive: new Date() },
+                })
+            );
         } else {
-            await prisma.user.update({
-                where: { id: user.id },
-                data: { lastLogin: new Date(), lastActive: new Date() },
-            });
+            await retryPrismaUpdate(() =>
+                prisma.user.update({
+                    where: { id: user.id },
+                    data: { lastLogin: new Date(), lastActive: new Date() },
+                })
+            );
+        // Ajoute une fonction utilitaire pour retry sur les erreurs de lock
+        async function retryPrismaUpdate(fn, retries = 3, delay = 500) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    return await fn();
+                } catch (err) {
+                    if (
+                        err.code === 'P2002' || // Prisma unique constraint error
+                        (err.message && err.message.includes('Lock wait timeout exceeded'))
+                    ) {
+                        if (i < retries - 1) {
+                            await new Promise(res => setTimeout(res, delay));
+                            continue;
+                        }
+                    }
+                    throw err;
+                }
+            }
+        }
         }
 
         // Générer les tokens

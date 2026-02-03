@@ -162,7 +162,7 @@ const options = {
   },
   apis: [
     './src/routes/index.js',
-    // './src/modules/auth/auth.routes.js',
+    './src/modules/auth/auth.routes.js',
     './src/modules/user/user.routes.js',
     './src/modules/learning_path/learning.path.routes.js',
     './src/modules/Level/Level.routes.js',

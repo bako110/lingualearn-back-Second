@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 const adminDashboardRoutes = require('../modules/admin_dashboard/admin_dashboard.routes');
-const authRoutes = require('../modules/auth/auth.routes');
+// const authRoutes = require('../modules/auth/auth.routes');
 const userRoutes = require('../modules/user/user.routes');
 const learningPathsRoutes = require('../modules/learning_path/learning.path.routes');
 const levelRoutes = require('../modules/Level/Level.routes');
@@ -33,7 +33,7 @@ router.use('/subscription-plans', subscriptionPlanRoutes);
 router.use('/subscriptions', subscriptionRoutes);
 router.use('/messages-ws', messageWsRoutes);
 router.use('/gamification', gamificationRoutes);
-router.use('/auth', authRoutes);
+// router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/learning-paths', learningPathsRoutes);
 router.use('/modules', moduleRoutes);

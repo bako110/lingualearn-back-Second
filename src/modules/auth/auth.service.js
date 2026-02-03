@@ -8,6 +8,59 @@ const {allowRoles} = require('../../middleware/authMiddleware');
 const { emailService } = require('../../utils/emailService');
 const { logger } = require('../../utils/logger');
 
+async function retryPrismaUpdate(fn, retries = 5, baseDelay = 200) {
+    for (let i = 0; i < retries; i++) {
+        try {
+            return await fn();
+        } catch (err) {
+            const isLockTimeout =
+                (err.code === 'P2034') ||
+                (err.code === 'P2002') ||
+                (err.message && err.message.includes('Lock wait timeout exceeded')) ||
+                (err.message && err.message.includes('ER_LOCK_WAIT_TIMEOUT')) ||
+                (err.message && err.message.includes('code: 1205')) ||
+                (err.message && err.message.includes('Deadlock'));
+            
+            if (isLockTimeout && i < retries - 1) {
+                const jitter = Math.random() * 200;
+                const delay = baseDelay * Math.pow(2, i) + jitter;
+                logger.warn(`[Auth] Lock timeout on attempt ${i + 1}/${retries}, retrying in ${Math.round(delay)}ms`);
+                await new Promise(res => setTimeout(res, delay));
+                continue;
+            }
+            
+            if (isLockTimeout) {
+                logger.error(`[Auth] Lock timeout exhausted after ${retries} attempts:`, err.message);
+            }
+            throw err;
+        }
+    }
+}
+
+async function updateUserLoginTimestampsAsync(userId, firstLogin) {
+    setImmediate(async () => {
+        try {
+            const updateData = {
+                lastLogin: new Date(),
+                lastActive: new Date()
+            };
+            
+            if (firstLogin) {
+                updateData.firstLogin = false;
+            }
+            
+            await retryPrismaUpdate(() =>
+                prisma.user.update({
+                    where: { id: userId },
+                    data: updateData,
+                })
+            );
+        } catch (err) {
+            logger.error(`[Auth] Failed to update login timestamps for user ${userId}:`, err);
+        }
+    });
+}
+
 class AuthService {
     // ============ INSCRIPTION ============
      async register(data) {
@@ -232,42 +285,7 @@ class AuthService {
         }
 
         // Vérifier la première connexion
-        let firstLogin = user.firstLogin;
-        if (firstLogin) {
-            // Mettre à jour le flag firstLogin à false avec retry
-            await retryPrismaUpdate(() =>
-                prisma.user.update({
-                    where: { id: user.id },
-                    data: { firstLogin: false, lastLogin: new Date(), lastActive: new Date() },
-                })
-            );
-        } else {
-            await retryPrismaUpdate(() =>
-                prisma.user.update({
-                    where: { id: user.id },
-                    data: { lastLogin: new Date(), lastActive: new Date() },
-                })
-            );
-        // Ajoute une fonction utilitaire pour retry sur les erreurs de lock
-        async function retryPrismaUpdate(fn, retries = 3, delay = 500) {
-            for (let i = 0; i < retries; i++) {
-                try {
-                    return await fn();
-                } catch (err) {
-                    if (
-                        err.code === 'P2002' || // Prisma unique constraint error
-                        (err.message && err.message.includes('Lock wait timeout exceeded'))
-                    ) {
-                        if (i < retries - 1) {
-                            await new Promise(res => setTimeout(res, delay));
-                            continue;
-                        }
-                    }
-                    throw err;
-                }
-            }
-        }
-        }
+        const firstLogin = user.firstLogin;
 
         // Générer les tokens
         const tokens = await this.generateTokens(user.id, user.accountType);
@@ -280,6 +298,8 @@ class AuthService {
         const { passwordHash, ...userWithoutPassword } = user;
 
         await this.logLoginAttempt(loginInfo, user.id, true);
+
+        updateUserLoginTimestampsAsync(user.id, firstLogin);
 
         // Retourner uniquement la section profile dans user
         let userData = { ...userWithoutPassword, firstLogin };
@@ -370,10 +390,12 @@ class AuthService {
         const passwordHash = await bcrypt.hash(password, 12);
 
         // Mettre à jour le mot de passe de l'utilisateur
-        await prisma.user.update({
-            where: { id: resetToken.userId },
-            data: { passwordHash },
-        });
+        await retryPrismaUpdate(() =>
+            prisma.user.update({
+                where: { id: resetToken.userId },
+                data: { passwordHash },
+            })
+        );
 
         // Marquer le token comme utilisé
         await prisma.passwordResetToken.update({
@@ -412,10 +434,12 @@ class AuthService {
         }
 
         // Marquer l'utilisateur comme vérifié
-        await prisma.user.update({
-            where: { id: verification.userId },
-            data: { isVerified: true },
-        });
+        await retryPrismaUpdate(() =>
+            prisma.user.update({
+                where: { id: verification.userId },
+                data: { isVerified: true },
+            })
+        );
 
         // Marquer le code comme utilisé
         await prisma.verificationCode.update({
@@ -450,10 +474,12 @@ class AuthService {
         const newPasswordHash = await bcrypt.hash(newPassword, 12);
 
         // Mettre à jour le mot de passe
-        await prisma.user.update({
-            where: { id: userId },
-            data: { passwordHash: newPasswordHash },
-        });
+        await retryPrismaUpdate(() =>
+            prisma.user.update({
+                where: { id: userId },
+                data: { passwordHash: newPasswordHash },
+            })
+        );
 
         // Invalider toutes les sessions existantes (sécurité)
         await prisma.session.deleteMany({ where: { userId } });

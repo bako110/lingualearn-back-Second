@@ -91,6 +91,7 @@ class AuthService {
 
     // Vérifier email existant
     if (email) {
+        
         const existingEmail = await prisma.user.findUnique({ where: { email } });
         if (existingEmail) throw new AppError(400, 'A user already exists with this email');
     }
